@@ -1,19 +1,24 @@
 <?php
 declare(strict_types=1);
 
- require_once __DIR__ . '/fonctions.php';
+require_once __DIR__ . '/fonctions.php';
+require_once __DIR__ . '/modele.php';
 
 $prenom = 'Raiden';
 $date = date("d/m/y");
 
 $notes = [
-'Ada' => 17.5,
-'Alan' => 14.0,
-'Grace' => 9.5,
-'Linus' => 12.0,
-'Margaret' => 6.5,
-
+    new Etudiant(nom: 'Ada', note: 17.5),
+    new Etudiant(nom: 'Alan', note: 14.0),
+    new Etudiant(nom: 'Grace', note: 9.5),
+    new Etudiant(nom: 'Linus', note: 12.0),
+    new Etudiant(nom: 'Margaret', note: 6.5),
 ];
+
+$notesNumeriques = [];
+foreach ($notes as $etudiant) {
+    $notesNumeriques[$etudiant->nom] = $etudiant->note;
+}
 ?>
 
 <!DOCTYPE html>
@@ -34,13 +39,15 @@ $notes = [
         <thead>
             <th>Nom</th>
             <th>Note</th>
+            <th>Mention</th>
         </thead>
 
         <tbody>
-            <?php foreach ($notes as $key => $val) :?>
+            <?php foreach ($notes as $etudiant) :?>
             <tr>
-                <th><?= $key?></th>
-                <td <?php if (!estAdmis($val)) : echo "style= 'color: red;'"; endif?> ><?= $val?></td>
+                <th><?= $etudiant->nom?></th>
+                <td <?php if (!estAdmis($etudiant->note)) : echo "style= 'color: red;'"; endif?> ><?= $etudiant->note?></td>
+                <td><?= $etudiant->mention()->value?></td>
             </tr>
             <?php endforeach ?>
 
@@ -49,10 +56,22 @@ $notes = [
         
     </table>
 
-    Moyenne : <?php echo round(moyenne($notes), 2); ?> <br>
-    Minimal : <?php echo min($notes); ?> <br>
-	Maximal : <?php echo max($notes); ?> <br>
-    Meilleur étudiant : <?php echo meilleurEtudiant($notes); ?> <br>
+    Moyenne : <?php echo round(moyenne($notesNumeriques), 2); ?> <br>
+    Minimal : <?php echo min($notesNumeriques); ?> <br>
+	Maximal : <?php echo max($notesNumeriques); ?> <br>
+    Meilleur étudiant : <?php echo meilleurEtudiant($notesNumeriques); ?> <br>
+
+
+    <h2>Test de la propriété readonly</h2>
+    <?php
+    $etudiant = $notes[0];
+
+    try {
+        $etudiant->note = 20;
+    } catch (Error $e) {
+        echo $e->getMessage();
+    }
+    ?>
 	<footer>
 		
 	</footer>
